@@ -1,0 +1,80 @@
+SELECT BusinessEntityID, FirstName, LastName,CountryRegionName
+FROM Employees
+WHERE CountryRegionName = N'United States'
+
+SELECT COUNT(JobTitle) AS JobCount, JobTitle
+FROM Employees
+GROUP BY JobTitle
+ORDER BY JobCount
+
+SELECT COUNT(FirstName) AS NameCount, FirstName
+FROM Employees
+GROUP BY FirstName
+ORDER BY NameCount
+
+SELECT TOP(1) COUNT(FirstName) AS MostCommonName, FirstName
+FROM Employees
+GROUP BY FirstName
+ORDER BY MostCommonName DESC
+
+SELECT TOP(1) COUNT(FirstName) AS LeastCommonName, FirstName
+FROM Employees
+GROUP BY FirstName
+ORDER BY LeastCommonName ASC
+
+SELECT TOP(5) COUNT(City) AS CityCount, City
+FROM Employees
+GROUP BY City
+ORDER BY CityCount DESC
+
+SELECT TOP(5)City, COUNT(DISTINCT JobTitle) AS UniqueJobs
+FROM Employees
+GROUP BY City
+ORDER BY UniqueJobs DESC
+
+SELECT StartDate
+FROM Employees
+WHERE StartDate > '01/01/2012'
+
+
+
+SELECT TOP(1) YearsWorked, COUNT(*) AS EmployeeCount
+FROM 
+(
+    SELECT  YEAR(StartDate) AS YearsWorked
+    FROM Employees
+) AS YearCalculation
+GROUP BY YearsWorked
+ORDER BY EmployeeCount DESC;
+
+SELECT YearWorked, City, COUNT(*) AS EmployeeCount
+FROM 
+(
+    SELECT YEAR(StartDate) AS YearWorked, City
+    FROM Employees
+) AS YearCalculation
+GROUP BY YearWorked, City
+ORDER BY YearWorked, City;
+
+UPDATE Employees
+SET EndDate = (
+    SELECT h.EndDate
+    FROM History h
+    WHERE h.EndDate IS NOT NULL AND Employees.StartDate = h.StartDate
+);
+
+SELECT LeftYear, COUNT(*) AS LeftCount
+FROM (
+	SELECT YEAR(EndDate) AS LeftYear
+	FROM Employees
+	WHERE EndDate IS NOT NULL
+) AS YearCalculate
+GROUP BY LeftYear
+
+SELECT COUNT(LessThanOneYear) AS LessThanOneYearCOUNT, LessThanOneYear
+FROM (
+	SELECT DATEDIFF(DAY, StartDate, EndDate) AS LessThanOneYear
+	FROM Employees
+	WHERE StartDate IS NOT NULL AND EndDate IS NOT NULL AND DATEDIFF(DAY, StartDate, EndDate)<367
+) AS YearCalculate
+GROUP BY LessThanOneYear
